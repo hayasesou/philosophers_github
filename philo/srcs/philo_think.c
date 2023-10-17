@@ -3,7 +3,7 @@
 
 
 
-void	philo_think(t_philo *philo)
+t_status	philo_think(t_philo *philo)
 {
 	struct timeval current;
 	long	time_from_start;
@@ -15,6 +15,12 @@ void	philo_think(t_philo *philo)
 
 
 	pthread_mutex_lock(philo->mutex_print);
+	if (*(philo->die_flag) == true)
+	{
+		pthread_mutex_unlock(philo->mutex_print);
+		return (DEAD);
+	}
 	printf("%10ld %4d is thinking\n", time_from_start, philo->philo_id);
 	pthread_mutex_unlock(philo->mutex_print);
+	return (ALIVE);
 }

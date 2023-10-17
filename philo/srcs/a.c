@@ -15,16 +15,21 @@ void	wait_until_all_thread_maked(t_philo *philo)
 void *display(void *i)
 {
 	t_philo *philo;
+	t_status status;
 
 	philo = (t_philo *)i;
+
 	wait_until_all_thread_maked(philo);
+
 	while(1)
 	{
-		take_left_fork(philo);
-		take_right_fork(philo);
-		philo_eat(philo);
-		philo_sleep(philo);
-		philo_think(philo);
+		status = take_left_fork(philo);
+		status = take_right_fork(philo);
+		status = philo_eat(philo);
+		status = philo_sleep(philo);
+		status =philo_think(philo);
+		if (status == DEAD)
+			break;
 	}
 
 	return (0);
@@ -78,7 +83,7 @@ void make_philosopher(int *situation)
 	while(++i < situation[0])
 	{
 		philo = &inf.philos[i];
-	 	pthread_create(inf.philos_life, NULL, display, philo);
+	 	pthread_create(&(inf.philos_life[i]), NULL, display, philo);
 	}
 	inf.make_all_thread = true;
 	
@@ -94,9 +99,6 @@ void make_philosopher(int *situation)
 		{
 			gettimeofday(&now, NULL);
 			tmp_now = now;
-			//printf("check1 %d %d\n", tmp_now.tv_usec,  inf.philos[k].last_eat.tv_usec);
-			//int x = inf.philos[k].last_eat.tv_sec;
-			//int y = inf.philos[k].last_eat.tv_usec;
 			while(inf.philos[k].last_eat.tv_sec == 0)
 				;
 			now.tv_sec = (now.tv_sec - inf.philos[k].last_eat.tv_sec) * 1000;
@@ -104,31 +106,39 @@ void make_philosopher(int *situation)
 			time_from_last_eat = now.tv_sec + now.tv_usec;
 			if (time_from_last_eat >= situation[1] && inf.philos[k].last_eat.tv_sec != 0)
 			{
+
+				pthread_mutex_lock(&(inf.mutex_print));
+
 				inf.die_flag = true;
+
 				tmp_now.tv_sec = (tmp_now.tv_sec - inf.philos[k].start_time.tv_sec) * 1000;
 				tmp_now.tv_usec = (tmp_now.tv_usec - inf.philos[k].start_time.tv_usec) / 1000;
-				pthread_mutex_lock(&(inf.mutex_print));
+
 				printf("\e[31m");
 				printf("%10ld %4d died\n", (long)(tmp_now.tv_sec + tmp_now.tv_usec), inf.philos[k].philo_id);
 				printf("\e[0m");
 
 
 				printf("philo %d: time_from_last =  %ld\n", inf.philos[k].philo_id, time_from_last_eat);
-				//printf("putain %ld: %d\n", tmp_now.tv_sec, tmp_now.tv_usec);
-				//printf("putain %ld: %d\n", now.tv_sec, now.tv_usec);
-				//printf("putain %ld: %d\n", inf.philos[k].last_eat.tv_sec, inf.philos[k].last_eat.tv_usec);
-				//printf("-----------putain %d: %d------------\n",  x, y);
-				exit(0);
+				break ;
 			}
+		}
+		if (time_from_last_eat >= situation[1])
+		{
+			break;
 		}
 	}
 
+
+
+	pthread_mutex_unlock(&(inf.mutex_print));
 	while(i-- > 0)
-	{
-		pthread_join(*inf.philos_life, NULL);
-		inf.philos_life--;
-	}
+		pthread_join(inf.philos_life[i], NULL);
 	while (++i < situation[0])
 		pthread_mutex_destroy(&inf.mutexs[i]);
+	pthread_mutex_destroy(&inf.mutex_print);
+	free(inf.philos_life);
+	free(inf.mutexs);
+	free(inf.philos);
 }
 

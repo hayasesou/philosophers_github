@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/08 23:33:24 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/10/16 16:38:24 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/10/17 11:13:56 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,11 @@ typedef	enum e_status
 
 
 int *set_situation(int ac, char **av);
-void	take_left_fork(t_philo *philo);
-void	take_right_fork(t_philo *philo);
-void	philo_eat(t_philo *philo);
-void	philo_sleep(t_philo *philo);
-void	philo_think(t_philo *philo);
+t_status	take_left_fork(t_philo *philo);
+t_status	take_right_fork(t_philo *philo);
+t_status	philo_eat(t_philo *philo);
+t_status	philo_sleep(t_philo *philo);
+t_status	philo_think(t_philo *philo);
 
 
 #endif

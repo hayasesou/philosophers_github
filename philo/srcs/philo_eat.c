@@ -3,7 +3,7 @@
 #include "philosopher.h"
 
 
-void take_left_fork(t_philo *philo)
+t_status take_left_fork(t_philo *philo)
 {
 	struct timeval current;
 	long	time_from_start;
@@ -16,14 +16,20 @@ void take_left_fork(t_philo *philo)
 
 	pthread_mutex_lock(philo->mutex_print);
 	if (*(philo->die_flag) == true)
-		return ;
+	{
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->mutex_print);
+		return (DEAD);
+	}
 	printf("%10ld %4d has taken a left_fork\n", time_from_start, philo->philo_id);
 	pthread_mutex_unlock(philo->mutex_print);
+
+	return (ALIVE);
 }
 
 
 
-void take_right_fork(t_philo *philo)
+t_status take_right_fork(t_philo *philo)
 {
 	struct timeval current;
 	long time_from_start;
@@ -36,13 +42,21 @@ void take_right_fork(t_philo *philo)
 	
 
 	pthread_mutex_lock(philo->mutex_print);
+	if (*(philo->die_flag) == true)
+	{
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_unlock(philo->mutex_print);
+		return (DEAD);
+	}
 	printf("%10ld %4d has taken a right_fork\n", time_from_start, philo->philo_id);
 	pthread_mutex_unlock(philo->mutex_print);
+	return (ALIVE);
 }
 
 
 
-void	philo_eat(t_philo *philo)
+t_status	philo_eat(t_philo *philo)
 {
 	struct timeval current;
 	struct timeval eat_start;
@@ -59,10 +73,19 @@ void	philo_eat(t_philo *philo)
 
 
 	pthread_mutex_lock(philo->mutex_print);
+	if (*(philo->die_flag) == true)
+	{
+	pthread_mutex_unlock(philo->left_fork);
+	pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_unlock(philo->mutex_print);
+		return (DEAD);
+	}
+
 	printf("%10ld %4d is eating\n", time_from_start, philo->philo_id);
 	pthread_mutex_unlock(philo->mutex_print);
 
 	gettimeofday(&eat_start, NULL);
+
 	time_from_eat_start = 0;
 	while(time_from_eat_start <= philo->time2eat)
 	{
@@ -74,4 +97,5 @@ void	philo_eat(t_philo *philo)
 
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
+	return (ALIVE);
 }

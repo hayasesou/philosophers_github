@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/08 23:34:22 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/10/13 01:45:17 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/10/17 10:59:31 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,6 @@ int main (int ac, char **av)
 	int *situation = set_situation(ac, av);
 	if (situation == NULL)
 		return (-1);
-	//for (int k = 0; k < ac - 1; k++)
-	//{
-	//	printf("situation[%d] = %d\n",k, situation[k]);
-	//}
 	make_philosopher(situation);
 	return(0);
  }

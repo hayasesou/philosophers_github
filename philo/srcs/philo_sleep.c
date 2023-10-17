@@ -2,7 +2,7 @@
 #include "philosopher.h"
 
 
-void philo_sleep(t_philo *philo)
+t_status philo_sleep(t_philo *philo)
 {
 	struct	timeval current;
 	struct	timeval sleep_start;
@@ -16,6 +16,12 @@ void philo_sleep(t_philo *philo)
 	
 
 	pthread_mutex_lock(philo->mutex_print);
+	
+	if (*(philo->die_flag) == true)
+	{
+		pthread_mutex_unlock(philo->mutex_print);
+		return (DEAD);
+	}
 	printf("%10ld %4d is sleeping\n", time_from_start, philo->philo_id);
 	pthread_mutex_unlock(philo->mutex_print);
 
@@ -28,4 +34,5 @@ void philo_sleep(t_philo *philo)
 		current.tv_sec = (current.tv_sec - sleep_start.tv_sec) * 1000;
 		time_from_sleep_start  = current.tv_sec + current.tv_usec;		
 	}
+	return (ALIVE);
 }
