@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/08 23:33:24 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/10/17 11:13:56 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/10/29 14:30:40 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,41 +20,37 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
-void make_philosopher(int *situation);
 
-typedef struct s_philo
+# define DEBUG_PRINTF(fmt, ...) printf("file : %s, line : %d, func : %s, " fmt, __FILE__, __LINE__, __func__, ## __VA_ARGS__);
+
+
+
+#define	NO_ARG	INT_MIN;
+
+
+#define COLOR_RED	"\e[31m"
+#define COLOR_RESET	"\e[0m"
+#define COLOR_BOLD	"\e[1m"
+
+
+
+
+typedef	enum e_return
 {
-	
-	int philo_id;
-	int	time2die;
-	int	time2eat;
-	int	time2sleep;
-	int num_must_eat;
-	struct timeval	last_eat;
-	struct timeval start_time;
-	pthread_mutex_t *right_fork;
-	pthread_mutex_t *left_fork;
-	bool *flag;
-	bool *die_flag;
+	SUCCESS,
+	ERROR,
 
+	MALLOC_ERROR,
+	MUTEX_INIT_ERROR,
+	MUTEX_DESTROY_ERROR,
+	PTHREAD_CREATE_ERROR,
+	PTHREAD_JOIN_ERROR,
 
-
-	pthread_mutex_t *mutex_print;
-
-}				t_philo;
-
-typedef struct s_inf
-{
-	pthread_mutex_t *mutexs;
-	t_philo	*philos;
-	pthread_t *philos_life;
-	bool make_all_thread;
-	bool	die_flag;
-	
-	pthread_mutex_t mutex_print;
-
-}			t_inf;
+	INVALID_ARG,
+	VALID_ARG,
+}		t_return;
 
 typedef enum e_action
 {
@@ -62,23 +58,105 @@ typedef enum e_action
 	EAT,
 	THINK,
 	SLEEP,
+	DIED,
 }			t_action;
 
+typedef enum e_decision
+{
+	CONTINUE,
+	STOP,
+}		t_decision;
 
 typedef	enum e_status
 {
 	DEAD,
-	ALIVE,
+	HUNGRY,
+	SATISFIED,
 }			t_status;
 
+typedef struct setting
+{
+	int	philo_num;
+	int	time2die;
+	int	time2eat;
+	int	time2sleep;
+	int num_must_eat;
+}		t_setting;
 
 
-int *set_situation(int ac, char **av);
-t_status	take_left_fork(t_philo *philo);
-t_status	take_right_fork(t_philo *philo);
-t_status	philo_eat(t_philo *philo);
-t_status	philo_sleep(t_philo *philo);
-t_status	philo_think(t_philo *philo);
+#define NUM_SHARE_MUTEX 3
+typedef enum e_share_mutex
+{
+	MUTEX_THREAD_START,
+	MUTEX_PRINT,
+	MUTEX_LAST_EAT,
+}		t_share_mutex;
 
+
+typedef struct s_share
+{
+	int	philo_num;
+	int	time2die;
+	int	time2eat;
+	int	time2sleep;
+	int	num_satisfied_philo;
+
+	bool	philo_die;
+	struct	timeval	start_time;
+	pthread_mutex_t *share_mutex;
+}			t_share;
+
+typedef struct s_philo
+{
+	int philo_id;
+	int num_must_eat;
+	struct timeval	last_eat;
+	pthread_mutex_t *right_fork;
+	pthread_mutex_t *left_fork;
+	bool first_philo;
+
+	t_share	*share;
+}				t_philo;
+
+typedef struct s_inf
+{
+	pthread_mutex_t *forks;
+	pthread_t 		*philos_life;
+	t_philo			*philos;
+}			t_inf;
+
+
+
+
+
+long	get_time_from_start(struct timeval start);
+long	get_elapsed_time(struct timeval start, struct timeval current);
+
+
+t_status	check_philo_state(t_philo *philo, t_action action, long *time_from_start);
+
+t_decision	take_fork(t_philo *philo);
+t_status take_left_fork(t_philo *philo);
+t_status take_right_fork(t_philo *philo);
+
+void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share);
+t_return 	make_philosopher(t_setting *setting, t_inf *inf);
+void	wait_until_all_thread_maked(t_philo *philo);
+void *display(void *i);
+
+t_return		set_situation(char **av, t_setting *setting, t_inf *inf);
+
+t_decision	philo_eat(t_philo *philo);
+t_decision	philo_sleep(t_philo *philo);
+t_decision	philo_think(t_philo *philo);
+
+void	display_philo_log(t_philo *philo, long time_from_start, t_action action);
+void	clear_inf_malloc(t_inf *inf);
+
+t_return	print_philo_error(char *serror_masseage, t_return return_val, const char *file, const char *func);
+t_return	print_invalid_arg(t_return return_val, char * error_arg_message);
+void	philo_mutex_destroy(t_inf *inf, int count_destroy, const char *file, const char *func);
+void	philo_share_mutex_destroy(t_share *share, int count_destroy, const char * file, const char *func);
+void	philo_join_thread(t_inf *inf, int count_created_thread, const char *file, const char *func);
 
 #endif

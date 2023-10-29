@@ -1,101 +1,42 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_eat.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/10/19 13:34:49 by hfukushi          #+#    #+#             */
+/*   Updated: 2023/10/29 18:05:34 by hfukushi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philosopher.h"
 
 
-t_status take_left_fork(t_philo *philo)
+t_decision	philo_eat(t_philo *philo)
 {
 	struct timeval current;
-	long	time_from_start;
-
-	pthread_mutex_lock(philo->left_fork);
-	gettimeofday(&current, NULL);
-	current.tv_usec = (current.tv_usec - philo->start_time.tv_usec) / 1000;
-	current.tv_sec = (current.tv_sec - philo->start_time.tv_sec) * 1000;
-	time_from_start = current.tv_sec + current.tv_usec;
-
-	pthread_mutex_lock(philo->mutex_print);
-	if (*(philo->die_flag) == true)
-	{
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->mutex_print);
-		return (DEAD);
-	}
-	printf("%10ld %4d has taken a left_fork\n", time_from_start, philo->philo_id);
-	pthread_mutex_unlock(philo->mutex_print);
-
-	return (ALIVE);
-}
-
-
-
-t_status take_right_fork(t_philo *philo)
-{
-	struct timeval current;
-	long time_from_start;
-
-	pthread_mutex_lock(philo->right_fork);
-	gettimeofday(&current, NULL);
-	current.tv_usec = (current.tv_usec - philo->start_time.tv_usec) / 1000;
-	current.tv_sec = (current.tv_sec - philo->start_time.tv_sec) * 1000;
-	time_from_start = current.tv_sec + current.tv_usec;
-	
-
-	pthread_mutex_lock(philo->mutex_print);
-	if (*(philo->die_flag) == true)
-	{
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_unlock(philo->mutex_print);
-		return (DEAD);
-	}
-	printf("%10ld %4d has taken a right_fork\n", time_from_start, philo->philo_id);
-	pthread_mutex_unlock(philo->mutex_print);
-	return (ALIVE);
-}
-
-
-
-t_status	philo_eat(t_philo *philo)
-{
-	struct timeval current;
-	struct timeval eat_start;
 	long time_from_eat_start;
 	long time_from_start;
 
-	gettimeofday(&current, NULL);
-	current.tv_usec = (current.tv_usec - philo->start_time.tv_usec) / 1000;
-	current.tv_sec = (current.tv_sec - philo->start_time.tv_sec) * 1000;
-	time_from_start = current.tv_sec + current.tv_usec;
-
-
-	gettimeofday(&(philo->last_eat), NULL);
-
-
-	pthread_mutex_lock(philo->mutex_print);
-	if (*(philo->die_flag) == true)
+	if (check_philo_state(philo, EAT, &time_from_start) == DEAD)
 	{
-	pthread_mutex_unlock(philo->left_fork);
-	pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_unlock(philo->mutex_print);
-		return (DEAD);
+		// printf("eat\n");
+		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(philo->right_fork);
+		return (STOP);
 	}
-
-	printf("%10ld %4d is eating\n", time_from_start, philo->philo_id);
-	pthread_mutex_unlock(philo->mutex_print);
-
-	gettimeofday(&eat_start, NULL);
-
-	time_from_eat_start = 0;
-	while(time_from_eat_start <= philo->time2eat)
+	pthread_mutex_lock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
+	gettimeofday(&(philo->last_eat), NULL);
+	pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
+	gettimeofday(&current, NULL);
+	time_from_eat_start = get_elapsed_time(philo->last_eat, current);
+	while(time_from_eat_start <= philo->share->time2eat)
 	{
 		gettimeofday(&current, NULL);
-		current.tv_usec = (current.tv_usec - eat_start.tv_usec) / 1000;
-		current.tv_sec = (current.tv_sec - eat_start.tv_sec) * 1000;
-		time_from_eat_start  = current.tv_sec + current.tv_usec;		
+		time_from_eat_start  = get_elapsed_time(philo->last_eat, current);
 	}
-
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
-	return (ALIVE);
+	return (CONTINUE);
 }

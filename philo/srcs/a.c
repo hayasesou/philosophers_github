@@ -1,144 +1,121 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   a.c                                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/10/22 21:42:39 by hfukushi          #+#    #+#             */
+/*   Updated: 2023/10/29 17:53:08 by hfukushi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philosopher.h"
 
-
-void	wait_until_all_thread_maked(t_philo *philo)
-{
-	while(philo->flag == false)
-		;
-	if (philo->start_time.tv_usec == 0)
-		gettimeofday(&(philo->start_time), NULL);
-	gettimeofday(&(philo->last_eat), NULL);
-}
-
-
-void *display(void *i)
-{
-	t_philo *philo;
-	t_status status;
-
-	philo = (t_philo *)i;
-
-	wait_until_all_thread_maked(philo);
-
-	while(1)
-	{
-		status = take_left_fork(philo);
-		status = take_right_fork(philo);
-		status = philo_eat(philo);
-		status = philo_sleep(philo);
-		status =philo_think(philo);
-		if (status == DEAD)
-			break;
-	}
-
-	return (0);
-}
-
-
-void	set_philo_inf(t_inf *inf, int *situation)
+void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share)
 {
 	int i;
 
 	i = -1;
-	while(++ i < situation[0])
+	while(++i < setting.philo_num)
 	{
+		memset(&inf->philos[i], 0, sizeof(t_philo));
 		inf->philos[i].philo_id = i + 1;
-		inf->philos[i].time2die = situation[1];
-		inf->philos[i].time2eat = situation[2];
-		inf->philos[i].time2sleep = situation[3];
-		inf->philos[i].left_fork = &inf->mutexs[i];
-		inf->philos[i].right_fork = &inf->mutexs[(situation[0] - 1 + i) % situation[0]];
-		inf->philos[i].flag = &inf->make_all_thread;
-		inf->philos[i].die_flag = &(inf->die_flag);
-		inf->philos[i].mutex_print = &(inf->mutex_print);
+		inf->philos[i].num_must_eat = setting.num_must_eat;
+		inf->philos[i].left_fork = &inf->forks[i];
+		inf->philos[i].right_fork = &inf->forks[(setting.philo_num - 1 + i) % setting.philo_num];
+		inf->philos[i].share = share;
+		if (i + 1 == 1)
+			inf->philos[i].first_philo = true;
+		else
+			inf->philos[i].first_philo = false;
 	}
-	free(situation);
+}
+
+t_return	set_share_info(t_share *share, t_setting setting, t_inf *inf)
+{
+	int	num_success_init;
+
+	share->philo_num = setting.philo_num;
+	share->time2die = setting.time2die;
+	share->time2eat = setting.time2eat;
+	share->time2sleep = setting.time2sleep;
+	share->num_satisfied_philo = 0;
+	share->philo_die = false;
+	share->share_mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * NUM_SHARE_MUTEX);
+	if (share->share_mutex == NULL)
+	{
+		philo_mutex_destroy(inf, share->philo_num, __FILE__, __func__);
+		clear_inf_malloc(inf);
+		return (print_philo_error("malloc error", MALLOC_ERROR, __FILE__, __func__));
+	}
+	num_success_init = -1;
+	while(++num_success_init< NUM_SHARE_MUTEX)
+	{
+		if(pthread_mutex_init(&share->share_mutex[num_success_init], NULL) != 0)
+			break;
+	}
+	if(num_success_init != NUM_SHARE_MUTEX)
+	{
+		philo_mutex_destroy(inf, share->philo_num, __FILE__, __func__);
+		clear_inf_malloc(inf);
+		philo_share_mutex_destroy(share, num_success_init, __FILE__, __func__);
+		print_philo_error("mutex_init error", MUTEX_INIT_ERROR, __FILE__, __func__);
+	}
+	return (SUCCESS);
 }
 
 
-void make_philosopher(int *situation)
+t_return make_philosopher(t_setting *setting, t_inf *inf)
 {
-	t_inf inf;
+	t_share share;
 
-	inf.philos_life = (pthread_t *)malloc(sizeof(pthread_t) * situation[0]);
-	inf.philos = (t_philo *)malloc(sizeof(t_philo) * situation[0]);
-	inf.mutexs = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * situation[0]);
-	inf.die_flag = false;
-
-
-
-	pthread_mutex_init(&inf.mutex_print, NULL);
-
-
-
-	int i = -1;
-	while (++i < situation[0])
-		pthread_mutex_init(&inf.mutexs[i], NULL);
-	set_philo_inf(&inf, situation);
-
-	i = -1;
+	if(set_share_info(&share, *setting, inf) != SUCCESS)
+		return (ERROR);
+	set_philo_inf(inf, *setting, &share);
 	t_philo	*philo;
-
-	while(++i < situation[0])
+	pthread_mutex_lock(&share.share_mutex[MUTEX_THREAD_START]);
+	int i = -1;
+	while(++i < setting->philo_num)
 	{
-		philo = &inf.philos[i];
-	 	pthread_create(&(inf.philos_life[i]), NULL, display, philo);
+		philo = &inf->philos[i];
+		if (pthread_create(&(inf->philos_life[i]), NULL, display, philo) != 0)
+		{
+			philo_join_thread(inf, i - 1, __FILE__, __func__);
+			philo_mutex_destroy(inf, setting->philo_num,__FILE__, __func__);
+			clear_inf_malloc(inf);
+			return (print_philo_error("pthread_create error", PTHREAD_CREATE_ERROR, __FILE__, __func__));
+		}
 	}
-	inf.make_all_thread = true;
-	
+	gettimeofday(&share.start_time, NULL);
+	pthread_mutex_unlock(&share.share_mutex[MUTEX_THREAD_START]);
 
+	struct timeval current;
 	int k;
-	struct timeval now;
-	struct timeval tmp_now;
-	long time_from_last_eat;
 	while(1)
 	{
 		k = -1;
-		while(++k < situation[0])
+		while (++k < share.philo_num)
 		{
-			gettimeofday(&now, NULL);
-			tmp_now = now;
-			while(inf.philos[k].last_eat.tv_sec == 0)
-				;
-			now.tv_sec = (now.tv_sec - inf.philos[k].last_eat.tv_sec) * 1000;
-			now.tv_usec = (now.tv_usec - inf.philos[k].last_eat.tv_usec) / 1000;
-			time_from_last_eat = now.tv_sec + now.tv_usec;
-			if (time_from_last_eat >= situation[1] && inf.philos[k].last_eat.tv_sec != 0)
+			if (inf->philos[k].last_eat.tv_usec == 0)
+				continue;
+			// pthread_mutex_lock(&philo->share->share_mutex[MUTEX_PRINT]);
+			pthread_mutex_lock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
+			gettimeofday(&current, NULL);
+			if (get_elapsed_time(inf->philos[k].last_eat, current) >= share.time2die)
 			{
-
-				pthread_mutex_lock(&(inf.mutex_print));
-
-				inf.die_flag = true;
-
-				tmp_now.tv_sec = (tmp_now.tv_sec - inf.philos[k].start_time.tv_sec) * 1000;
-				tmp_now.tv_usec = (tmp_now.tv_usec - inf.philos[k].start_time.tv_usec) / 1000;
-
-				printf("\e[31m");
-				printf("%10ld %4d died\n", (long)(tmp_now.tv_sec + tmp_now.tv_usec), inf.philos[k].philo_id);
-				printf("\e[0m");
-
-
-				printf("philo %d: time_from_last =  %ld\n", inf.philos[k].philo_id, time_from_last_eat);
+				pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
+				share.philo_die = true;
+				display_philo_log(&inf->philos[k], get_time_from_start(share.start_time), DIED);
+				pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_PRINT]);
 				break ;
 			}
+			pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
+			// pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_PRINT]);
 		}
-		if (time_from_last_eat >= situation[1])
-		{
+		if (share.philo_die == true)
 			break;
-		}
 	}
-
-
-
-	pthread_mutex_unlock(&(inf.mutex_print));
-	while(i-- > 0)
-		pthread_join(inf.philos_life[i], NULL);
-	while (++i < situation[0])
-		pthread_mutex_destroy(&inf.mutexs[i]);
-	pthread_mutex_destroy(&inf.mutex_print);
-	free(inf.philos_life);
-	free(inf.mutexs);
-	free(inf.philos);
+	return (SUCCESS);
 }
 

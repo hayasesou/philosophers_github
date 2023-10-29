@@ -4,7 +4,7 @@ NAME = philo
 #===FLAGS===#
 
 
-CFLAGS = -MMD -MP -Wall -Werror -Wextra #-fsanitize=thread
+CFLAGS = -MMD -MP -Wall -Werror -Wextra -g -fsanitize=thread
 CC = cc
 RM = rm -rf
 SRC_DIR = ./srcs
@@ -15,7 +15,15 @@ M_FILES = philo_main.c\
 		  check_argument.c\
 		  philo_eat.c\
 		  philo_sleep.c\
-		  philo_think.c
+		  philo_think.c\
+		  philo_log.c\
+		  philo_life.c\
+		  time_stamp.c\
+		  philo_take_fork.c\
+		  philo_clear.c\
+		  print_philo_error.c\
+		  mutex_destroy.c\
+		  philo_utils.c
 INCLUDE_DIR = ./include
 INCLUDE = -I$(INCLUDE_DIR)
 SRCS = $(addprefix $(SRC_DIR)/,$(M_FILES))
