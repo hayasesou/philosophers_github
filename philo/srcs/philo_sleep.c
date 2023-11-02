@@ -8,9 +8,14 @@ t_decision philo_sleep(t_philo *philo)
 	struct timeval sleep_start;
 	long	time_from_start;
 	long time_from_sleep_start;
+	t_status	status;
 
-	if (check_philo_state(philo, SLEEP, &time_from_start) == DEAD)
+
+	status = check_philo_state(philo, SLEEP, &time_from_start);
+	if (status != HUNGRY)
 	{
+		printf("status == [%d]\n", status);
+		// printf("sleep\n");
 		return (STOP);
 	}
 	gettimeofday(&sleep_start, NULL);

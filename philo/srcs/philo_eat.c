@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 13:34:49 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/10/29 18:05:34 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/02 14:11:40 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,15 @@
 
 t_decision	philo_eat(t_philo *philo)
 {
-	struct timeval current;
-	long time_from_eat_start;
-	long time_from_start;
+	struct timeval	current;
+	long			time_from_eat_start;
+	long			time_from_start;
+	t_status status;
 
-	if (check_philo_state(philo, EAT, &time_from_start) == DEAD)
+	status = check_philo_state(philo, EAT, &time_from_start);
+	if (status != HUNGRY)
 	{
+		printf("status == [%d]\n", status);
 		// printf("eat\n");
 		pthread_mutex_unlock(philo->left_fork);
 		pthread_mutex_unlock(philo->right_fork);
@@ -28,13 +31,23 @@ t_decision	philo_eat(t_philo *philo)
 	}
 	pthread_mutex_lock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
 	gettimeofday(&(philo->last_eat), NULL);
+	if (philo->num_must_eat > 0)
+	{
+		philo->num_must_eat--;
+		// printf("%d %d\n",philo->philo_id, philo->num_must_eat);
+		if (philo->num_must_eat == 0)
+		{
+			philo->share->num_not_satisfied_philo--;
+			// printf("%d is satisified\n", philo->philo_id);
+		}
+	}
 	pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
 	gettimeofday(&current, NULL);
 	time_from_eat_start = get_elapsed_time(philo->last_eat, current);
-	while(time_from_eat_start <= philo->share->time2eat)
+	while (time_from_eat_start <= philo->share->time2eat)
 	{
 		gettimeofday(&current, NULL);
-		time_from_eat_start  = get_elapsed_time(philo->last_eat, current);
+		time_from_eat_start = get_elapsed_time(philo->last_eat, current);
 	}
 	pthread_mutex_unlock(philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);

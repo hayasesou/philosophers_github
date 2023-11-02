@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/08 23:34:22 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/10/28 19:59:31 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/02 11:10:38 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,8 @@ int	main	(int ac, char **av)
 	return (0);
 }
 
-//__attribute__((destructor))
-	//static void destructor(){
-		//system("leaks -q philo");
-	//}
+// __attribute__((destructor))
+// 	static void destructor(){
+// 		system("leaks -q philo");
+// 	}
 

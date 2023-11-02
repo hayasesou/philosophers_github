@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 21:42:39 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/10/29 17:53:08 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/02 18:58:18 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,10 @@
 
 void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share)
 {
-	int i;
+	int	i;
 
 	i = -1;
-	while(++i < setting.philo_num)
+	while (++i < setting.philo_num)
 	{
 		memset(&inf->philos[i], 0, sizeof(t_philo));
 		inf->philos[i].philo_id = i + 1;
@@ -40,7 +40,10 @@ t_return	set_share_info(t_share *share, t_setting setting, t_inf *inf)
 	share->time2die = setting.time2die;
 	share->time2eat = setting.time2eat;
 	share->time2sleep = setting.time2sleep;
-	share->num_satisfied_philo = 0;
+	if (setting.num_must_eat > 0)
+		share->num_not_satisfied_philo = setting.philo_num;
+	else
+		share->num_not_satisfied_philo = NOT_CHECK_NUM_MUST_EAT;
 	share->philo_die = false;
 	share->share_mutex = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * NUM_SHARE_MUTEX);
 	if (share->share_mutex == NULL)
@@ -50,9 +53,9 @@ t_return	set_share_info(t_share *share, t_setting setting, t_inf *inf)
 		return (print_philo_error("malloc error", MALLOC_ERROR, __FILE__, __func__));
 	}
 	num_success_init = -1;
-	while(++num_success_init< NUM_SHARE_MUTEX)
+	while (++num_success_init < NUM_SHARE_MUTEX)
 	{
-		if(pthread_mutex_init(&share->share_mutex[num_success_init], NULL) != 0)
+		if (pthread_mutex_init(&share->share_mutex[num_success_init], NULL) != 0)
 			break;
 	}
 	if(num_success_init != NUM_SHARE_MUTEX)
@@ -68,15 +71,19 @@ t_return	set_share_info(t_share *share, t_setting setting, t_inf *inf)
 
 t_return make_philosopher(t_setting *setting, t_inf *inf)
 {
-	t_share share;
+	t_share	share;
 
-	if(set_share_info(&share, *setting, inf) != SUCCESS)
+	if (set_share_info(&share, *setting, inf) != SUCCESS)
 		return (ERROR);
 	set_philo_inf(inf, *setting, &share);
+
+	// philo_share_mutex_destroy(&share, NUM_SHARE_MUTEX, __FILE__, __func__);
+	// clear_share_mutex_malloc(&share);
+
 	t_philo	*philo;
 	pthread_mutex_lock(&share.share_mutex[MUTEX_THREAD_START]);
 	int i = -1;
-	while(++i < setting->philo_num)
+	while (++i < setting->philo_num)
 	{
 		philo = &inf->philos[i];
 		if (pthread_create(&(inf->philos_life[i]), NULL, display, philo) != 0)
@@ -87,35 +94,48 @@ t_return make_philosopher(t_setting *setting, t_inf *inf)
 			return (print_philo_error("pthread_create error", PTHREAD_CREATE_ERROR, __FILE__, __func__));
 		}
 	}
+	printf("all thread maked\n");
 	gettimeofday(&share.start_time, NULL);
 	pthread_mutex_unlock(&share.share_mutex[MUTEX_THREAD_START]);
 
-	struct timeval current;
+	// struct timeval current;
 	int k;
+	// long time_from_last_eat;
+		k = -1;
 	while(1)
 	{
-		k = -1;
-		while (++k < share.philo_num)
+		// k = -1;
+		//while (++k < share.philo_num)
+		//{
+			//if (inf->philos[k].last_eat.tv_usec == 0)
+				//continue;
+			//pthread_mutex_lock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
+			//gettimeofday(&current, NULL);
+			//time_from_last_eat =get_elapsed_time(inf->philos[k].last_eat, current);
+			//pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
+			//if (time_from_last_eat >= share.time2die)
+			//{
+				//pthread_mutex_lock(&philo->share->share_mutex[MUTEX_DIE]);
+				//share.philo_die = true;
+				//pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_DIE]);
+				//pthread_mutex_lock(&philo->share->share_mutex[MUTEX_PRINT]);
+				//display_philo_log(&inf->philos[k], get_time_from_start(share.start_time), DIED);
+				//pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_PRINT]);
+				//break ;
+			//}
+		//}
+		// if (share.philo_die == true)
+			// break;
+		k++;
+		if (k == 1000000000)
 		{
-			if (inf->philos[k].last_eat.tv_usec == 0)
-				continue;
-			// pthread_mutex_lock(&philo->share->share_mutex[MUTEX_PRINT]);
-			pthread_mutex_lock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
-			gettimeofday(&current, NULL);
-			if (get_elapsed_time(inf->philos[k].last_eat, current) >= share.time2die)
-			{
-				pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
-				share.philo_die = true;
-				display_philo_log(&inf->philos[k], get_time_from_start(share.start_time), DIED);
-				pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_PRINT]);
-				break ;
-			}
-			pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
-			// pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_PRINT]);
-		}
-		if (share.philo_die == true)
+			pthread_mutex_lock(&share.share_mutex[MUTEX_DIE]);
+			share.philo_die = true;
+			pthread_mutex_unlock(&share.share_mutex[MUTEX_DIE]);
 			break;
+		}
 	}
+	// printf("helli\n");
 	return (SUCCESS);
 }
 

@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/08 23:33:24 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/10/29 14:30:40 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/01 16:58:19 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 
 
 #define	NO_ARG	INT_MIN;
+#define	NOT_CHECK_NUM_MUST_EAT -1;
 
 
 #define COLOR_RED	"\e[31m"
@@ -84,12 +85,13 @@ typedef struct setting
 }		t_setting;
 
 
-#define NUM_SHARE_MUTEX 3
+#define NUM_SHARE_MUTEX 4
 typedef enum e_share_mutex
 {
 	MUTEX_THREAD_START,
-	MUTEX_PRINT,
+	MUTEX_DIE,
 	MUTEX_LAST_EAT,
+	MUTEX_PRINT,
 }		t_share_mutex;
 
 
@@ -99,7 +101,7 @@ typedef struct s_share
 	int	time2die;
 	int	time2eat;
 	int	time2sleep;
-	int	num_satisfied_philo;
+	int	num_not_satisfied_philo;
 
 	bool	philo_die;
 	struct	timeval	start_time;
@@ -152,6 +154,7 @@ t_decision	philo_think(t_philo *philo);
 
 void	display_philo_log(t_philo *philo, long time_from_start, t_action action);
 void	clear_inf_malloc(t_inf *inf);
+void	clear_share_mutex_malloc(t_share *share);
 
 t_return	print_philo_error(char *serror_masseage, t_return return_val, const char *file, const char *func);
 t_return	print_invalid_arg(t_return return_val, char * error_arg_message);

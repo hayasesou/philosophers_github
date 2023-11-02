@@ -4,7 +4,7 @@ NAME = philo
 #===FLAGS===#
 
 
-CFLAGS = -MMD -MP -Wall -Werror -Wextra -g -fsanitize=thread
+CFLAGS = -MMD -MP -Wall -Werror -Wextra -g -fsanitize=address
 CC = cc
 RM = rm -rf
 SRC_DIR = ./srcs
@@ -22,7 +22,6 @@ M_FILES = philo_main.c\
 		  philo_take_fork.c\
 		  philo_clear.c\
 		  print_philo_error.c\
-		  mutex_destroy.c\
 		  philo_utils.c
 INCLUDE_DIR = ./include
 INCLUDE = -I$(INCLUDE_DIR)
