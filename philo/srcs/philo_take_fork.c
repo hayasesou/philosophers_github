@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/21 17:09:56 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 16:17:27 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/04 18:49:11 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ t_status	take_left_fork(t_philo *philo)
 	{
 		if (philo->first_philo == true)
 			put_down_fork(philo, RIGHT);
-			// pthread_mutex_unlock(philo->right_fork);
 		return (status);
 	}
 	pthread_mutex_lock(philo->left_fork);
@@ -40,7 +39,6 @@ t_status	take_right_fork(t_philo *philo)
 	{
 		if (philo->first_philo == false)
 			put_down_fork(philo, LEFT);
-			// pthread_mutex_unlock(philo->left_fork);
 		return (status);
 	}
 	pthread_mutex_lock(philo->right_fork);

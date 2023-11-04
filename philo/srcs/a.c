@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 21:42:39 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 18:22:34 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/04 18:48:39 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share)
 		inf->philos[i].philo_id = i + 1;
 		inf->philos[i].num_must_eat = setting.num_must_eat;
 		inf->philos[i].left_fork = &inf->forks[i];
-		inf->philos[i].right_fork =&inf->forks[(setting.philo_num - 1 + i) % setting.philo_num];
+		inf->philos[i].right_fork
+			= &inf->forks[(setting.philo_num - 1 + i) % setting.philo_num];
 		inf->philos[i].share = share;
 		if (i + 1 == 1)
 			inf->philos[i].first_philo = true;
@@ -45,7 +46,7 @@ static void	set_seting2share(t_share *share, t_setting setting)
 	share->philo_die = false;
 }
 
-static void init_share_mutex(int *num_success_init, t_share *share)
+static void	init_share_mutex(int *num_success_init, t_share *share)
 {
 	*num_success_init = -1;
 	while (++(*num_success_init) < NUM_SHARE_MUTEX)
@@ -71,13 +72,6 @@ t_return	set_share_info(t_share *share, t_setting setting, t_inf *inf)
 		return (print_philo_error("malloc error",
 				MALLOC_ERROR, __FILE__, __func__));
 	}
-	//num_success_init = -1;
-	//while (++num_success_init < NUM_SHARE_MUTEX)
-	//{
-		//if (pthread_mutex_init(&share->share_mutex[num_success_init], NULL)
-			//!= 0)
-			//break ;
-	//}
 	init_share_mutex(&num_success_init, share);
 	if (num_success_init != NUM_SHARE_MUTEX)
 	{

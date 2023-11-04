@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 13:34:49 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 16:11:26 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/04 18:46:21 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,8 +42,8 @@ static	void	is_eating(t_philo *philo)
 
 t_decision	philo_eat(t_philo *philo)
 {
-	long			time_from_start;
-	t_status status;
+	long		time_from_start;
+	t_status	status;
 
 	status = check_philo_state(philo, EAT, &time_from_start);
 	if (status != HUNGRY)

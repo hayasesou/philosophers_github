@@ -1,19 +1,19 @@
 
 #include "philosopher.h"
 
-static void is_sleeping(t_philo *philo)
+static void	is_sleeping(t_philo *philo)
 {
 	struct timeval	current;
 	struct timeval	sleep_start;
-	long 			time_from_sleep_start;
+	long			time_from_sleep_start;
 
 	gettimeofday(&sleep_start, NULL);
 	gettimeofday(&current, NULL);
 	time_from_sleep_start = get_elapsed_time(sleep_start, current);
-	while(time_from_sleep_start <= philo->share->time2sleep)
+	while (time_from_sleep_start <= philo->share->time2sleep)
 	{
 		gettimeofday(&current, NULL);
-		time_from_sleep_start  = get_elapsed_time(sleep_start, current);
+		time_from_sleep_start = get_elapsed_time(sleep_start, current);
 	}
 }
 

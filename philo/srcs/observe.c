@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 16:29:37 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 17:10:42 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/04 18:44:56 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ static	bool	check_one_philo_die(t_inf *inf, t_share *share,
 
 static	bool	check_all_philo_satisified(t_share *share)
 {
+	pthread_mutex_lock(&share->share_mutex[MUTEX_LAST_EAT]);
 	if (share->num_not_satisfied_philo == 0)
 	{
 		pthread_mutex_unlock(&share->share_mutex[MUTEX_LAST_EAT]);
@@ -53,11 +54,11 @@ void	observe_philo_state(t_share *share, t_inf *inf)
 			if (inf->philos[i].last_eat.tv_usec == 0)
 				continue ;
 			pthread_mutex_lock(&share->share_mutex[MUTEX_PRINT]);
-			pthread_mutex_lock(&share->share_mutex[MUTEX_LAST_EAT]);
 			if (check_all_philo_satisified(share) == true)
 				break ;
 			gettimeofday(&current, NULL);
-			time_from_last_eat = get_elapsed_time(inf->philos[i].last_eat, current);
+			time_from_last_eat
+				= get_elapsed_time(inf->philos[i].last_eat, current);
 			pthread_mutex_unlock(&share->share_mutex[MUTEX_LAST_EAT]);
 			if (check_one_philo_die(inf, share, time_from_last_eat, i) == true)
 				break ;
