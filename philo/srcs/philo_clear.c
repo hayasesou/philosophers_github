@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 10:33:35 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/02 18:57:16 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/04 17:44:24 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,13 +39,10 @@ void	philo_join_thread(t_inf *inf, int count_created_thread, const char *file, c
 	i = 0;
 	while (i < count_created_thread)
 	{
-		printf("waiting %d ...\n", i);
 		if (pthread_join(inf->philos_life[i], NULL) != 0)
 			print_philo_error("mutex_destroy error", PTHREAD_JOIN_ERROR, file, func);
-		printf("%d\n", i);
 		i++;
 	}
-	// DEBUG_PRINTF("hello\n");
 }
 
 void	philo_mutex_destroy(t_inf *inf, int count_destroy, const char *file, const char *func)
@@ -67,7 +64,8 @@ void	philo_share_mutex_destroy(t_share *share, int count_destroy, const char * f
 	}
 }
 
-void	clear_share_mutex_malloc(t_share *share)
+void free_all(t_share *share, t_inf *inf)
 {
+	clear_inf_malloc(inf);
 	free(share->share_mutex);
 }

@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/08 23:33:24 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/01 16:58:19 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/04 17:47:00 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,15 @@ typedef	enum e_status
 {
 	DEAD,
 	HUNGRY,
-	SATISFIED,
+	ALL_SATISFIED,
 }			t_status;
+
+typedef	enum e_fork
+{
+	LEFT,
+	RIGHT,
+	BOTH,
+}	t_fork;
 
 typedef struct setting
 {
@@ -140,9 +147,11 @@ t_status	check_philo_state(t_philo *philo, t_action action, long *time_from_star
 t_decision	take_fork(t_philo *philo);
 t_status take_left_fork(t_philo *philo);
 t_status take_right_fork(t_philo *philo);
+void	put_down_fork(t_philo *philo, t_fork fork);
+void	observe_philo_state(t_share *share, t_inf *inf);
 
 void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share);
-t_return 	make_philosopher(t_setting *setting, t_inf *inf);
+t_return 	make_philosopher(t_setting *setting, t_inf *inf, t_share *share);
 void	wait_until_all_thread_maked(t_philo *philo);
 void *display(void *i);
 
@@ -154,7 +163,7 @@ t_decision	philo_think(t_philo *philo);
 
 void	display_philo_log(t_philo *philo, long time_from_start, t_action action);
 void	clear_inf_malloc(t_inf *inf);
-void	clear_share_mutex_malloc(t_share *share);
+void	free_all(t_share *share, t_inf *inf);
 
 t_return	print_philo_error(char *serror_masseage, t_return return_val, const char *file, const char *func);
 t_return	print_invalid_arg(t_return return_val, char * error_arg_message);

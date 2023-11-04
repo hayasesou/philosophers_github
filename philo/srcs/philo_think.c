@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/21 15:13:25 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/02 14:09:49 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/04 14:11:11 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,6 @@ t_decision	philo_think(t_philo *philo)
 
 	status = check_philo_state(philo, THINK, &time_from_start);
 	if (status != HUNGRY)
-	{
-		printf("status == [%d]\n", status);
-		// printf("think\n");
 		return (STOP);
-	}
 	return (CONTINUE);
 }

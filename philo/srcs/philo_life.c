@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 19:20:03 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/02 18:25:42 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/03 12:04:46 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,6 @@ void	*display(void *i)
 		if (philo_think(philo) == STOP)
 			break ;
 	}
-	printf("[%d] hello\n", philo->philo_id);
+	// printf("[%d] hello\n", philo->philo_id);
 	return (0);
 }

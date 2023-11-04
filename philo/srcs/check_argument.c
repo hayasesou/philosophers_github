@@ -73,7 +73,7 @@ t_return init_mutex_of_t_inf(t_inf *inf, t_setting setting)
 
 static	t_return	preapration_t_inf(t_inf *inf, t_setting *setting)
 {
-	memset(inf, 0, sizeof(t_inf));
+	// memset(inf, 0, sizeof(t_inf));
 	inf->forks = (pthread_mutex_t *)malloc(sizeof(pthread_mutex_t) * setting->philo_num);
 	if (inf->forks  == NULL)
 		return (print_philo_error("malloc error", MALLOC_ERROR, __FILE__, __func__));
