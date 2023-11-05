@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/21 17:09:56 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 18:49:11 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/05 11:29:55 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,13 +28,17 @@ t_status	take_left_fork(t_philo *philo)
 	return (status);
 }
 
-
 t_status	take_right_fork(t_philo *philo)
 {
 	t_status	status;
 	long		time_from_start;
 
 	status = check_philo_state(philo, GET_FORK, &time_from_start);
+	if (philo->left_fork == philo->right_fork)
+	{
+		put_down_fork(philo, RIGHT);
+		return (DEAD);
+	}
 	if (status != HUNGRY)
 	{
 		if (philo->first_philo == false)
@@ -44,7 +48,6 @@ t_status	take_right_fork(t_philo *philo)
 	pthread_mutex_lock(philo->right_fork);
 	return (status);
 }
-
 
 t_decision	take_fork(t_philo *philo)
 {

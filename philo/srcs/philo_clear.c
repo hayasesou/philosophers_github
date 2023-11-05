@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/23 10:33:35 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 18:46:04 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/05 11:24:59 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,6 @@ void	clear_inf_malloc(t_inf *inf)
 		inf->philos_life = NULL;
 	}
 }
-
 
 void	philo_join_thread(t_inf *inf, int count_created_thread,
 			const char *file, const char *func)

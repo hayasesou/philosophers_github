@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 18:34:02 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 18:39:05 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/05 11:25:09 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,6 @@ int	ft_philo_atoi(char *str)
 
 t_return	check_argument(t_setting *setting)
 {
-
 	if (setting->philo_num == 0 || setting->philo_num == -1)
 		return (print_invalid_arg(INVALID_ARG, "number_of_philosopher"));
 	if (setting->time2die == 0 || setting->time2die == -1)
@@ -50,7 +49,6 @@ t_return	check_argument(t_setting *setting)
 	if (setting->num_must_eat == 0 || setting->num_must_eat == -1)
 		return (print_invalid_arg(INVALID_ARG,
 				"number_of_times_each_philosopher_must_eat"));
-
 	return (VALID_ARG);
 }
 
@@ -103,7 +101,6 @@ static	t_return	preapration_t_inf(t_inf *inf, t_setting *setting)
 	}
 	return (init_mutex_of_t_inf(inf, *setting));
 }
-
 
 t_return	set_situation(char **av, t_setting *setting, t_inf *inf)
 {

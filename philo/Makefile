@@ -4,7 +4,7 @@ NAME = philo
 #===FLAGS===#
 
 
-CFLAGS = -MMD -MP -Wall -Werror -Wextra #-g -fsanitize=address
+CFLAGS = -MMD -MP -Wall -Werror -Wextra -g -fsanitize=address
 CC = cc
 RM = rm -rf
 SRC_DIR = ./srcs

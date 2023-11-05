@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_sleep.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/05 11:24:12 by hfukushi          #+#    #+#             */
+/*   Updated: 2023/11/05 11:24:15 by hfukushi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philosopher.h"
 
@@ -21,7 +32,6 @@ t_decision	philo_sleep(t_philo *philo)
 {
 	long			time_from_start;
 	t_status		status;
-
 
 	status = check_philo_state(philo, SLEEP, &time_from_start);
 	if (status != HUNGRY)

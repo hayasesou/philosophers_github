@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/25 19:20:03 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 18:46:30 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/05 11:58:51 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,22 @@
 
 void	wait_until_all_thread_maked(t_philo *philo)
 {
+	struct timeval	current;
+	long			time_usleep;
+
 	pthread_mutex_lock(&philo->share->share_mutex[MUTEX_THREAD_START]);
 		philo->last_eat = philo->share->start_time;
 	pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_THREAD_START]);
+	gettimeofday(&current, NULL);
+	time_usleep = get_elapsed_time(philo->share->start_time, current);
+	while (time_usleep <= philo->usleeptime)
+	{
+		gettimeofday(&current, NULL);
+		time_usleep = get_elapsed_time(philo->share->start_time, current);
+	}
 }
 
-
-void	*display(void *i)
+void	*philo_life(void *i)
 {
 	t_philo	*philo;
 

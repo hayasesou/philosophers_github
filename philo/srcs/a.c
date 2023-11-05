@@ -6,20 +6,19 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 21:42:39 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 18:48:39 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/05 12:45:50 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share)
+void	even_philo_number(t_inf *inf, t_setting setting, t_share *share)
 {
 	int	i;
 
 	i = -1;
 	while (++i < setting.philo_num)
 	{
-		memset(&inf->philos[i], 0, sizeof(t_philo));
 		inf->philos[i].philo_id = i + 1;
 		inf->philos[i].num_must_eat = setting.num_must_eat;
 		inf->philos[i].left_fork = &inf->forks[i];
@@ -30,7 +29,48 @@ void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share)
 			inf->philos[i].first_philo = true;
 		else
 			inf->philos[i].first_philo = false;
+		if ((i + 1) % 2 == 1)
+			inf->philos[i].usleeptime = 0;
+		else if ((i + 1) % 2 == 0)
+			inf->philos[i].usleeptime = setting.time2eat / 2;
 	}
+}
+
+void	odd_philo_number(t_inf *inf, t_setting setting, t_share *share)
+{
+	int	i;
+	int	even;
+
+	i = -1;
+	even = (setting.philo_num / 2) + 1 ;
+	while (++i < setting.philo_num)
+	{
+		inf->philos[i].philo_id = i + 1;
+		inf->philos[i].num_must_eat = setting.num_must_eat;
+		inf->philos[i].left_fork = &inf->forks[i];
+		inf->philos[i].right_fork
+			= &inf->forks[(setting.philo_num - 1 + i) % setting.philo_num];
+		inf->philos[i].share = share;
+		if (i + 1 == 1)
+			inf->philos[i].first_philo = true;
+		else
+			inf->philos[i].first_philo = false;
+		if ((i + 1) % 2 == 1)
+			inf->philos[i].usleeptime = (setting.time2eat / 2) * i / 2;
+		else if ((i + 1) % 2 == 0)
+		{
+			inf->philos[i].usleeptime = (setting.time2eat / 2) * even;
+			even++;
+		}
+	}
+}
+
+void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share)
+{
+	if (setting.philo_num % 2 == 0)
+		even_philo_number(inf, setting, share);
+	else if (setting.philo_num % 2 == 1)
+		odd_philo_number(inf, setting, share);
 }
 
 static void	set_seting2share(t_share *share, t_setting setting)
@@ -98,7 +138,7 @@ t_return	make_philosopher(t_setting *setting, t_inf *inf, t_share *share)
 	while (++i < setting->philo_num)
 	{
 		philo = &inf->philos[i];
-		if (pthread_create(&(inf->philos_life[i]), NULL, display, philo) != 0)
+		if (pthread_create(&(inf->philos_life[i]), NULL, philo_life, philo) != 0)
 		{
 			philo_join_thread(inf, i - 1, __FILE__, __func__);
 			philo_mutex_destroy(inf, setting->philo_num, __FILE__, __func__);

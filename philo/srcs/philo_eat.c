@@ -6,12 +6,11 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 13:34:49 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/04 18:46:21 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/05 11:24:56 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
-
 
 static void	update_lasteat_and_num_unfulfilled_philo(t_philo *philo)
 {

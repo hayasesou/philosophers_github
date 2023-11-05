@@ -1,11 +1,20 @@
-
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   philo_log.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/05 11:24:48 by hfukushi          #+#    #+#             */
+/*   Updated: 2023/11/05 11:24:50 by hfukushi         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "philosopher.h"
 
 void	display_philo_log(t_philo *philo,
 		long time_from_start, t_action action)
 {
-
 	if (action == GET_FORK)
 		printf("%ld %d has taken a fork\n", time_from_start, philo->philo_id);
 	else if (action == EAT)
