@@ -6,13 +6,13 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/08 23:34:22 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/07 18:48:45 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/07 20:33:32 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philosopher.h"
 
-int	main	(int ac, char **av)
+int	main(int ac, char **av)
 {
 	t_setting	setting;
 	t_inf		inf;
