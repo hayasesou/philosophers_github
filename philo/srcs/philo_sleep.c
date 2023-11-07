@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/05 11:24:12 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/05 11:24:15 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/07 19:04:17 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ static void	is_sleeping(t_philo *philo)
 	{
 		gettimeofday(&current, NULL);
 		time_from_sleep_start = get_elapsed_time(sleep_start, current);
+		usleep(philo->share->sleep_eat_time);
 	}
 }
 

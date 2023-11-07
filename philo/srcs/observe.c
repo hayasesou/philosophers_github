@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 16:29:37 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/05 12:49:20 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/06 12:28:57 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ static	bool	check_one_philo_die(t_inf *inf, t_share *share,
 		pthread_mutex_unlock(&share->share_mutex[MUTEX_DIE]);
 		display_philo_log(&inf->philos[philo_id],
 			get_time_from_start(share->start_time), DIED);
+		printf("time last_eat == %ld\n", time_from_last_eat);
 		pthread_mutex_unlock(&share->share_mutex[MUTEX_PRINT]);
 		return (true);
 	}
@@ -55,16 +56,15 @@ void	observe_philo_state(t_share *share, t_inf *inf)
 				continue ;
 			pthread_mutex_lock(&share->share_mutex[MUTEX_PRINT]);
 			if (check_all_philo_satisified(share) == true)
-				break ;
+				return ;
 			gettimeofday(&current, NULL);
 			time_from_last_eat
 				= get_elapsed_time(inf->philos[i].last_eat, current);
 			pthread_mutex_unlock(&share->share_mutex[MUTEX_LAST_EAT]);
 			if (check_one_philo_die(inf, share, time_from_last_eat, i) == true)
-				break ;
+				return ;
 			pthread_mutex_unlock(&share->share_mutex[MUTEX_PRINT]);
 		}
-		if (share->philo_die == true || share->num_not_satisfied_philo == 0)
-			break ;
+		usleep(100);
 	}
 }

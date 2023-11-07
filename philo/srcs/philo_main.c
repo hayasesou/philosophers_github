@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/08 23:34:22 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/05 11:16:14 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/07 18:48:45 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ int	main	(int ac, char **av)
 
 	if (!(ac == 5 || ac == 6))
 	{
-		printf("Error:\nplease input: ./philo numer_of_philosophers time_to_die time_to_eat time_to_sleep number_of_times_each_philosopher_must_eat\n");
+		printf("%s%s%s%s%s%s", COLOR_RED, COLOR_BOLD, A, C, IS, INVALID);
 		return (ERROR);
 	}
 	if (set_situation(av, &setting, &inf) != SUCCESS)

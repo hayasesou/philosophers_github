@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 21:42:39 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/05 12:45:50 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/07 19:42:06 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,53 @@ void	even_philo_number(t_inf *inf, t_setting setting, t_share *share)
 		else if ((i + 1) % 2 == 0)
 			inf->philos[i].usleeptime = setting.time2eat / 2;
 	}
+	// for (int j = 0; j < setting.philo_num; j++)
+	//  printf("%ld\n",inf->philos[j].usleeptime);
+	// exit (0);
 }
+static	void setting_start_sleep_time(t_inf *inf, int philo_num, t_setting setting)
+{
+	int	count_odd_philo;
+	int	difference_time;
+
+	count_odd_philo = (philo_num / 2) + 1;
+	if (philo_num == 1)
+		difference_time = 0;
+	else
+	difference_time = setting.time2eat / (count_odd_philo - 1);
+	int	i;
+	int	even;
+	int odd;
+	int j;
+
+	i = -1;
+	odd = 0;
+	j = difference_time + setting.time2eat;
+	even = 0;
+	while (++i < setting.philo_num)
+	{
+		if ((i + 1) % 2 == 1)
+		{
+			inf->philos[i].usleeptime = difference_time * odd;
+			odd++;
+		}
+		else if ((i + 1) % 2 == 0)
+		{
+			inf->philos[i].usleeptime = j + difference_time * even;
+			even++;
+		}
+	}
+	//if (philo_num == 3)
+	//{
+		//inf->philos[0].usleeptime = 0;
+		//inf->philos[1].usleeptime = setting.time2eat;
+		//inf->philos[2].usleeptime = setting.time2eat / 2;
+	//}
+	// for(int k = 0 ; k < philo_num; k++)
+	//  printf("%ld\n" , inf->philos[k].usleeptime);
+	//  exit (0);
+}
+
 
 void	odd_philo_number(t_inf *inf, t_setting setting, t_share *share)
 {
@@ -42,6 +88,7 @@ void	odd_philo_number(t_inf *inf, t_setting setting, t_share *share)
 	int	even;
 
 	i = -1;
+	setting_start_sleep_time(inf, setting.philo_num, setting);
 	even = (setting.philo_num / 2) + 1 ;
 	while (++i < setting.philo_num)
 	{
@@ -55,14 +102,11 @@ void	odd_philo_number(t_inf *inf, t_setting setting, t_share *share)
 			inf->philos[i].first_philo = true;
 		else
 			inf->philos[i].first_philo = false;
-		if ((i + 1) % 2 == 1)
-			inf->philos[i].usleeptime = (setting.time2eat / 2) * i / 2;
-		else if ((i + 1) % 2 == 0)
-		{
-			inf->philos[i].usleeptime = (setting.time2eat / 2) * even;
-			even++;
-		}
 	}
+	setting_start_sleep_time(inf, setting.philo_num, setting);
+	// for (int j = 0; j < setting.philo_num; j++)
+	//  printf("%ld\n",inf->philos[j].usleeptime);
+	// exit (0);
 }
 
 void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share)
@@ -79,6 +123,14 @@ static void	set_seting2share(t_share *share, t_setting setting)
 	share->time2die = setting.time2die;
 	share->time2eat = setting.time2eat;
 	share->time2sleep = setting.time2sleep;
+	if (setting.philo_num > 150)
+		share->sleep_eat_time = LARGER_150;
+	else if (setting.philo_num > 80)
+		share->sleep_eat_time = LARGER_80;
+	else if (setting.philo_num > 30)
+		share->sleep_eat_time = LARGER_30;
+	else
+		share->sleep_eat_time =  LESS_30;
 	if (setting.num_must_eat > 0)
 		share->num_not_satisfied_philo = setting.philo_num;
 	else
@@ -135,6 +187,8 @@ t_return	make_philosopher(t_setting *setting, t_inf *inf, t_share *share)
 	set_philo_inf(inf, *setting, share);
 	pthread_mutex_lock(&share->share_mutex[MUTEX_THREAD_START]);
 	i = -1;
+
+	gettimeofday(&share->start_time, NULL);
 	while (++i < setting->philo_num)
 	{
 		philo = &inf->philos[i];
