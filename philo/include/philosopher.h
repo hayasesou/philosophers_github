@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/08 23:33:24 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/07 18:47:35 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/07 20:28:50 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@
 # define C ": ./philo numer_of_philosophers time_to_die "
 # define IS "time_to_eat time_to_sleep number_of_"
 # define INVALID "times_each_philosopher_must_eat\n"
-
 
 typedef enum e_return
 {
@@ -142,10 +141,11 @@ long		get_time_from_start(struct timeval start);
 long		get_elapsed_time(struct timeval start, struct timeval current);
 
 //check philo and display log
-t_status	check_philo_state(t_philo *philo, t_action action, long *time_from_start);
-void		display_philo_log(t_philo *philo, long time_from_start, t_action action);
+t_status	check_philo_state(t_philo *philo, t_action action,
+				long *time_from_start);
+void		display_philo_log(t_philo *philo, long time_from_start,
+				t_action action);
 void		observe_philo_state(t_share *share, t_inf *inf);
-void	x_usleep(int sleep_time);
 
 //philosopher_action
 void		*philo_life(void *i);
@@ -165,17 +165,24 @@ void		set_philo_inf(t_inf *inf, t_setting setting, t_share *share);
 t_return	set_situation(char **av, t_setting *setting, t_inf *inf);
 
 //thread create
+void		even_philo_number(t_inf *inf, t_setting setting, t_share *share);
+void		odd_philo_number(t_inf *inf, t_setting setting, t_share *share);
 t_return	make_philosopher(t_setting *setting, t_inf *inf, t_share *share);
+void		set_philo_inf(t_inf *inf, t_setting setting, t_share *share);
 
 //error_handling
-t_return	print_philo_error(char *serror_masseage, t_return return_val, const char *file, const char *func);
-t_return	print_invalid_arg(t_return return_val, char * error_arg_message);
+t_return	print_philo_error(char *serror_masseage, t_return return_val,
+				const char *file, const char *func);
+t_return	print_invalid_arg(t_return return_val, char *error_arg_message);
 
 //clear mutex & malloc
 void		clear_inf_malloc(t_inf *inf);
 void		free_all(t_share *share, t_inf *inf);
-void		philo_mutex_destroy(t_inf *inf, int count_destroy, const char *file, const char *func);
-void		philo_share_mutex_destroy(t_share *share, int count_destroy, const char * file, const char *func);
-void		philo_join_thread(t_inf *inf, int count_created_thread, const char *file, const char *func);
+void		philo_mutex_destroy(t_inf *inf, int count_destroy,
+				const char *file, const char *func);
+void		philo_share_mutex_destroy(t_share *share, int count_destroy,
+				const char *file, const char *func);
+void		philo_join_thread(t_inf *inf, int count_created_thread,
+				const char *file, const char *func);
 
 #endif

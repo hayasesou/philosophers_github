@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/19 13:34:49 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/07 19:03:44 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/07 20:30:06 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,4 +55,12 @@ t_decision	philo_eat(t_philo *philo)
 	is_eating(philo);
 	put_down_fork(philo, BOTH);
 	return (CONTINUE);
+}
+
+void	set_philo_inf(t_inf *inf, t_setting setting, t_share *share)
+{
+	if (setting.philo_num % 2 == 0)
+		even_philo_number(inf, setting, share);
+	else if (setting.philo_num % 2 == 1)
+		odd_philo_number(inf, setting, share);
 }

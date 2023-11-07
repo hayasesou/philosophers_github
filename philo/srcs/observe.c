@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 16:29:37 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/06 12:28:57 by hfukushi         ###   ########.fr       */
+/*   Updated: 2023/11/07 20:20:34 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,6 @@ static	bool	check_one_philo_die(t_inf *inf, t_share *share,
 		pthread_mutex_unlock(&share->share_mutex[MUTEX_DIE]);
 		display_philo_log(&inf->philos[philo_id],
 			get_time_from_start(share->start_time), DIED);
-		printf("time last_eat == %ld\n", time_from_last_eat);
 		pthread_mutex_unlock(&share->share_mutex[MUTEX_PRINT]);
 		return (true);
 	}

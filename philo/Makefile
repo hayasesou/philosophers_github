@@ -11,7 +11,7 @@ SRC_DIR = ./srcs
 OBJ_DIR = ./objs
 D_DIR = ./dir_d
 M_FILES = philo_main.c\
-		  a.c\
+		  setting.c\
 		  check_argument.c\
 		  philo_eat.c\
 		  philo_sleep.c\
