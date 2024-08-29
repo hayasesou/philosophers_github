@@ -18,7 +18,9 @@ void	wait_until_all_thread_maked(t_philo *philo)
 	long			time_msleep;
 
 	pthread_mutex_lock(&philo->share->share_mutex[MUTEX_THREAD_START]);
+	pthread_mutex_lock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
 		philo->last_eat = philo->share->start_time;
+	pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
 	pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_THREAD_START]);
 	gettimeofday(&current, NULL);
 	time_msleep = get_elapsed_time(philo->share->start_time, current);
@@ -26,7 +28,7 @@ void	wait_until_all_thread_maked(t_philo *philo)
 	{
 		gettimeofday(&current, NULL);
 		time_msleep = get_elapsed_time(philo->share->start_time, current);
-		usleep(1000);
+		usleep(10);
 	}
 }
 

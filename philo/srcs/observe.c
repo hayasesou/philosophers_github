@@ -51,8 +51,13 @@ void	observe_philo_state(t_share *share, t_inf *inf)
 		i = -1;
 		while (++i < share->philo_num)
 		{
+			pthread_mutex_lock(&share->share_mutex[MUTEX_LAST_EAT]);
 			if (inf->philos[i].last_eat.tv_usec == 0)
+			{
+				pthread_mutex_unlock(&share->share_mutex[MUTEX_LAST_EAT]);
 				continue ;
+			}
+			pthread_mutex_unlock(&share->share_mutex[MUTEX_LAST_EAT]);
 			pthread_mutex_lock(&share->share_mutex[MUTEX_PRINT]);
 			if (check_all_philo_satisified(share) == true)
 				return ;
