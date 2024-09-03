@@ -15,27 +15,26 @@
 t_status	check_philo_state(t_philo *philo, t_action action,
 				long *time_from_start)
 {
-	pthread_mutex_lock(&philo->share->share_mutex[MUTEX_PRINT]);
-	pthread_mutex_lock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
-	if (philo->share->num_not_satisfied_philo == 0)
-	{
-		pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
-		pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_PRINT]);
-		return (ALL_SATISFIED);
-	}
-	pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
-	pthread_mutex_lock(&philo->share->share_mutex[MUTEX_DIE]);
-	if (philo->share->philo_die == true)
-	{
-		pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_DIE]);
-		pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_PRINT]);
-		return (DEAD);
-	}
-	pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_DIE]);
-	*time_from_start = get_time_from_start(philo->share->start_time);
-	display_philo_log(philo, *time_from_start, action);
-	pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_PRINT]);
-	return (HUNGRY);
+    t_status status;
+    pthread_mutex_lock(&philo->share->share_mutex[MUTEX_PRINT]);
+    pthread_mutex_lock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
+    pthread_mutex_lock(&philo->share->share_mutex[MUTEX_DIE]);
+
+	status = HUNGRY;
+    if (philo->share->num_not_satisfied_philo == 0)
+        status = ALL_SATISFIED;
+    else if (philo->share->philo_die)
+        status = DEAD;
+    else
+    {
+        *time_from_start = get_time_from_start(philo->share->start_time);
+        display_philo_log(philo, *time_from_start, action);
+    }
+
+    pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_DIE]);
+    pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_LAST_EAT]);
+    pthread_mutex_unlock(&philo->share->share_mutex[MUTEX_PRINT]);
+	return (status);
 }
 
 void	put_down_fork(t_philo *philo, t_fork fork)

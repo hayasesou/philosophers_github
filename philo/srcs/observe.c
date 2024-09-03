@@ -69,6 +69,6 @@ void	observe_philo_state(t_share *share, t_inf *inf)
 				return ;
 			pthread_mutex_unlock(&share->share_mutex[MUTEX_PRINT]);
 		}
-		usleep(100);
+		usleep(5);
 	}
 }

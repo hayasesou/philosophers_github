@@ -28,7 +28,7 @@ void	wait_until_all_thread_maked(t_philo *philo)
 	{
 		gettimeofday(&current, NULL);
 		time_msleep = get_elapsed_time(philo->share->start_time, current);
-		usleep(10);
+		usleep(100);
 	}
 }
 
