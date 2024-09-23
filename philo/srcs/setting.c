@@ -73,7 +73,7 @@ t_return	set_share_info(t_share *share, t_setting setting, t_inf *inf)
 bool	create_philosopher(t_inf *inf,
 		t_setting *setting, int i, t_philo *philo)
 {
-	if (pthread_create(&(philo->philos_life), NULL, philo_life, philo) != 0)
+	if (pthread_create(&(inf->philos_life[i]), NULL, philo_life, philo) != 0)
 	{
 		philo_join_thread(inf, i - 1, __FILE__, __func__);
 		philo_mutex_destroy(inf, setting->philo_num, __FILE__, __func__);
