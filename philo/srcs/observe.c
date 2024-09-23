@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/04 16:29:37 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/07 20:20:34 by hfukushi         ###   ########.fr       */
+/*   Updated: 2024/09/23 13:21:35 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,18 @@ static	bool	check_all_philo_satisified(t_share *share)
 	return (false);
 }
 
+static	bool	lock_share_mutex(t_share *share, t_inf *inf, int i)
+{
+	pthread_mutex_lock(&share->share_mutex[MUTEX_LAST_EAT]);
+	if (inf->philos[i].last_eat.tv_usec == 0)
+	{
+		pthread_mutex_unlock(&share->share_mutex[MUTEX_LAST_EAT]);
+		return (false);
+	}
+	pthread_mutex_unlock(&share->share_mutex[MUTEX_LAST_EAT]);
+	return (true);
+}
+
 void	observe_philo_state(t_share *share, t_inf *inf)
 {
 	struct timeval	current;
@@ -51,13 +63,8 @@ void	observe_philo_state(t_share *share, t_inf *inf)
 		i = -1;
 		while (++i < share->philo_num)
 		{
-			pthread_mutex_lock(&share->share_mutex[MUTEX_LAST_EAT]);
-			if (inf->philos[i].last_eat.tv_usec == 0)
-			{
-				pthread_mutex_unlock(&share->share_mutex[MUTEX_LAST_EAT]);
+			if (lock_share_mutex(share, inf, i) == false)
 				continue ;
-			}
-			pthread_mutex_unlock(&share->share_mutex[MUTEX_LAST_EAT]);
 			pthread_mutex_lock(&share->share_mutex[MUTEX_PRINT]);
 			if (check_all_philo_satisified(share) == true)
 				return ;

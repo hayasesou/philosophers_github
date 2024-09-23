@@ -6,7 +6,7 @@
 /*   By: hfukushi <hfukushi@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/10/22 21:42:39 by hfukushi          #+#    #+#             */
-/*   Updated: 2023/11/07 20:29:02 by hfukushi         ###   ########.fr       */
+/*   Updated: 2024/09/23 13:30:11 by hfukushi         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,6 +70,21 @@ t_return	set_share_info(t_share *share, t_setting setting, t_inf *inf)
 	return (SUCCESS);
 }
 
+bool	create_philosopher(t_inf *inf,
+		t_setting *setting, int i, t_philo *philo)
+{
+	if (pthread_create(&(philo->philos_life), NULL, philo_life, philo) != 0)
+	{
+		philo_join_thread(inf, i - 1, __FILE__, __func__);
+		philo_mutex_destroy(inf, setting->philo_num, __FILE__, __func__);
+		clear_inf_malloc(inf);
+		print_philo_error("pthread_create error",
+			PTHREAD_CREATE_ERROR, __FILE__, __func__);
+		return (false);
+	}
+	return (true);
+}
+
 t_return	make_philosopher(t_setting *setting, t_inf *inf, t_share *share)
 {
 	t_philo	*philo;
@@ -84,14 +99,8 @@ t_return	make_philosopher(t_setting *setting, t_inf *inf, t_share *share)
 	while (++i < setting->philo_num)
 	{
 		philo = &inf->philos[i];
-		if (pthread_create(&(inf->philos_life[i]), NULL, philo_life, philo) != 0)
-		{
-			philo_join_thread(inf, i - 1, __FILE__, __func__);
-			philo_mutex_destroy(inf, setting->philo_num, __FILE__, __func__);
-			clear_inf_malloc(inf);
-			return (print_philo_error("pthread_create error",
-					PTHREAD_CREATE_ERROR, __FILE__, __func__));
-		}
+		if (create_philosopher(inf, setting, i, philo) == false)
+			return (ERROR);
 	}
 	gettimeofday(&share->start_time, NULL);
 	pthread_mutex_unlock(&share->share_mutex[MUTEX_THREAD_START]);
